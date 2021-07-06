@@ -12,10 +12,11 @@ from copy import deepcopy
 def parse_swc(swc_file):
     tree = []
     with open(swc_file) as fp:
-        fp.readline() # skip the header line
         for line in fp.readlines():
             line = line.strip()
             if not line: continue
+            if line[0] == '#': continue
+
             idx, type_, x, y, z, r, p = line.split()
             idx = int(idx)
             type_ = int(type_)
@@ -102,6 +103,7 @@ def trim_swc(tree_orig, imgshape, keep_candidate_points=True):
         if leaf[-2] == -1:
             soma_idx = leaf[0]
             break
+    #print(soma_idx)
 
     child_dict = {}
     for leaf in tree:
@@ -127,4 +129,36 @@ def trim_swc(tree_orig, imgshape, keep_candidate_points=True):
             tree_trim.append(leaf[:-1])
 
     return tree_trim
+
+def trim_out_of_box(tree_orig, imgshape, keep_candidate_points=True):
+    """ 
+    Trim the out-of-box leaves
+    """
+    # execute trimming
+    child_dict = {}
+    for leaf in tree_orig:
+        if leaf[-1] in child_dict:
+            child_dict[leaf[-1]].append(leaf[0])
+        else:
+            child_dict[leaf[-1]] = [leaf[0]]
+    
+    pos_dict = {}
+    for i, leaf in enumerate(tree_orig):
+        pos_dict[leaf[0]] = leaf
+
+    tree = []
+    for i, leaf in enumerate(tree_orig):
+        idx, type_, x, y, z, r, p = leaf
+        ib = is_in_box(x,y,z,imgshape)
+        if ib: 
+            tree.append(leaf)
+        elif keep_candidate_points:
+            if p in pos_dict and is_in_box(*pos_dict[p][2:5], imgshape):
+                tree.append(leaf)
+            elif idx in child_dict:
+                for ch_leaf in child_dict[idx]:
+                    if is_in_box(*pos_dict[ch_leaf][2:5], imgshape):
+                        tree.append(leaf)
+                        break
+    return tree
 
