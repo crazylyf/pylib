@@ -9,6 +9,14 @@
 ================================================================*"""
 from copy import deepcopy
 
+NEURITE_TYPES = {
+    'soma': [1],
+    'axon': [2],
+    'basal dendrite': [3],
+    'apical dendrite': [4],
+    'dendrite': [3,4],
+}
+
 def parse_swc(swc_file):
     tree = []
     with open(swc_file) as fp:
@@ -43,6 +51,12 @@ def find_soma_node(tree, p_soma=-1, p_idx_in_leaf=-1):
             return leaf[0]
     raise ValueError("Could not find the soma node!")
 
+def find_soma_index(tree, p_soma=-1):
+    for i, leaf in enumerate(tree):
+        if leaf[-1] == p_soma:
+            return i
+    raise ValueError("find_soma_index: Could not find the somma node!")
+
 def get_child_dict(tree, p_idx_in_leaf=-1):
     child_dict = {}
     for leaf in tree:
@@ -52,6 +66,13 @@ def get_child_dict(tree, p_idx_in_leaf=-1):
         else:
             child_dict[p_idx] = [leaf[0]]
     return child_dict
+
+def get_index_dict(tree):
+    index_dict = {}
+    for i, leaf in enumerate(tree):
+        idx = leaf[0]
+        index_dict[idx] = i
+    return index_dict
 
 def is_in_box(x, y, z, imgshape):
     """
