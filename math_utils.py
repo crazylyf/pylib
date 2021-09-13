@@ -14,7 +14,7 @@ import numpy as np
 
 def calc_included_angles_from_vectors(vecs1, vecs2, return_rad=False, epsilon=1e-7, spacing=None):
     if spacing is not None:
-        spacing_reshape = np.array(spacing).reshape(-1,1)
+        spacing_reshape = np.array(spacing).reshape(1,-1)
         # rescale vectors according to spacing
         vecs1 = vecs1 * spacing_reshape
         vecs2 = vecs2 * spacing_reshape

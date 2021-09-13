@@ -10,6 +10,7 @@
 #
 #================================================================
 import SimpleITK as sitk
+import pickle
 
 
 def load_image(imgfile):
@@ -18,4 +19,13 @@ def load_image(imgfile):
 def save_image(outfile, img):
     sitk.WriteImage(sitk.GetImageFromArray(img), outfile)
     return True
+
+def load_pickle(pklfile):
+    with open(pklfile, 'rb') as fp:
+        data = pickle.load(fp)
+    return data
+
+def save_pickle(obj, outfile):
+    with open(outfile, 'wb') as fp:
+        pickle.dump(obj, outfile)
 

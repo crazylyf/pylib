@@ -17,6 +17,29 @@ NEURITE_TYPES = {
     'dendrite': [3,4],
 }
 
+def load_spacings(spacing_file, zxy_order=False):
+    """
+    Load the spacing information for each brain. The spacing here refers to
+    the resolution along x,y,z axes.
+    """
+    spacing_dict = {}
+    with open(spacing_file, 'r') as fp:
+        for line in fp.readlines():
+            line = line.strip()
+            if not line: continue
+            ctxts = line.split(',')
+            brain_id = ctxts[0]
+            if not brain_id.isdigit(): 
+                continue # the brain is encoded as digits
+
+            brain_id = int(brain_id)
+            spacing = tuple(map(float, ctxts[1:]))
+            if zxy_order:
+                spacing = (spacing[2],spacing[0],spacing[1])
+            spacing_dict[brain_id] = spacing
+    
+    return spacing_dict
+
 def parse_swc(swc_file):
     tree = []
     with open(swc_file) as fp:
