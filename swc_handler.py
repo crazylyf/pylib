@@ -206,3 +206,34 @@ def trim_out_of_box(tree_orig, imgshape, keep_candidate_points=True):
                         break
     return tree
 
+def shift_swc(swc_file, sx, sy, sz):
+    if type(swc_file) == list:
+        tree = swc_file
+    else:
+        tree = parse_swc(swc_file)
+    new_tree = []
+    for node in tree:
+        idx, type_, x, y, z, r, p = node
+        x = x - sx
+        y = y - sy
+        z = z - sz
+        node = (idx, type_, x, y, z, r, p)
+        new_tree.append(node)
+    return new_tree
+
+def scale_swc(swc_file, scale=0.5):
+    if type(swc_file) == list:
+        tree = swc_file
+    else:
+        tree = parse_swc(swc_file)
+    new_tree = []
+    for node in tree:
+        idx, type_, x, y, z, r, p = node
+        x *= scale
+        y *= scale
+        z *= scale
+        node = (idx, type_, x, y, z, r, p)
+        new_tree.append(node)
+    return new_tree
+
+
